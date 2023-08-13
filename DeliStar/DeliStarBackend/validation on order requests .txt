@@ -1,9 +1,0 @@
-Add Order:
-	orderNumber
-	orderDeliveryDate *(check if it's before curdate() then it's invalid)
-	orderDropOffAddress
-	orderLocationLink
-	locationPlusCode
-	assignedDriverId
-	customerName * 
-	customerPhoneNo *
