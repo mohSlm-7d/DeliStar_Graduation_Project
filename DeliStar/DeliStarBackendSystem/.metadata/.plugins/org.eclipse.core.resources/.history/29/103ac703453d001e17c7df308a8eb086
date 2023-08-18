@@ -1,0 +1,317 @@
+package com.deli.star.service;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+
+import com.deli.star.DTO.Driver;
+import com.deli.star.DTO.Order;
+import com.deli.star.processor.CancelOrderProcessor;
+import com.deli.star.processor.ConfirmOrderProcessor;
+import com.deli.star.processor.FetchOrdersProcessor;
+import com.deli.star.response.codes.ResponseStatus;
+
+@Path("/Driver/Orders/")
+public class DriverOrdersService {
+	@POST @Path("Delivery/Confirm") @Produces(MediaType.APPLICATION_JSON)
+	public String ConfirmOrderDelivery(String confirmOrderRequest) {
+		JSONObject response = new JSONObject();
+		try {
+			JSONParser parser = new JSONParser();
+			JSONObject requestJSON = (JSONObject)parser.parse(confirmOrderRequest);
+
+
+			Driver requestingDriver = new Driver();
+			requestingDriver.setDriverId(Integer.parseInt(requestJSON.get("driverId").toString()));
+			requestingDriver.setDriverToken(requestJSON.get("driverToken").toString());
+
+			double driverLat = Double.valueOf(requestJSON.get("driverLat").toString());
+			double driverLng = Double.valueOf(requestJSON.get("driverLng").toString());
+
+
+
+			Order confirmedOrder = new Order();
+
+			System.out.println("ORDER_NUMBER FROM JSONObject (requested): " + requestJSON.get("orderNumber"));
+			confirmedOrder.setOrderNumber(Integer.parseInt(requestJSON.get("orderNumber").toString()));
+
+			String status = "";
+			ArrayList<Character> statusChars = new ArrayList<Character>();
+
+			ConfirmOrderProcessor confirmProcess = new ConfirmOrderProcessor();
+			ArrayList<Order> ordersList = confirmProcess.ConfirmOrderDelivery(requestingDriver, confirmedOrder, driverLat, driverLng, statusChars);
+
+			for(char charItr : statusChars) {
+				status += charItr;
+			}
+
+			if(ordersList == null) {
+				if(statusChars != null && ResponseStatus.Driver_Banned.toString().equals(status)) {
+					response.put("status", status);
+					response.put("driverToken", requestingDriver.getDriverToken().toString());
+					return response.toString();
+				}
+				ResponseStatus[] responses = ResponseStatus.class.getEnumConstants();
+				for(ResponseStatus responseItr : responses) {
+					if(requestingDriver.getDriverToken().toString().equals(responseItr.toString())) {
+						response.put("status", requestingDriver.getDriverToken().toString());
+						return response.toString();
+					}
+				}
+
+				response.put("status", ResponseStatus.Failed.toString());
+				response.put("driverToken", requestingDriver.getDriverToken().toString());
+				return response.toString();
+
+			}
+
+
+			System.out.println("Before filling the response end of Confirm Web Service: response =" + response);
+			response.put("status", ResponseStatus.Success.toString());
+			response.put("driverToken", requestingDriver.getDriverToken().toString());
+
+
+			JSONArray listOfOrders = new JSONArray();
+
+			for(Order orderItr : ordersList) {
+				JSONObject orderItrJSON = new JSONObject();
+				orderItrJSON.put("orderId", orderItr.getOrderId());
+				orderItrJSON.put("orderNumber", orderItr.getOrderNumber());
+				orderItrJSON.put("orderState", orderItr.getOrderState());
+				orderItrJSON.put("orderDropOffAddress", orderItr.getOrderDropOffAddress());
+				orderItrJSON.put("orderDeliveryDate", orderItr.getOrderDeliveryDate().toString());
+				orderItrJSON.put("orderLocationLink", orderItr.getOrderLocationLink());
+				orderItrJSON.put("orderRank", orderItr.getOrderRank());
+
+				orderItrJSON.put("customerName", orderItr.getCustomer().getCustomerName());
+				orderItrJSON.put("customerPhoneNo", orderItr.getCustomer().getCustomerPhoneNo());
+
+				listOfOrders.add(orderItrJSON);
+			}
+
+			response.put("listOfOrders", listOfOrders);
+
+			System.out.println("After filling the response end of Confirm Web Service: response =" + response);
+
+			return response.toString();
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			response.put("status", ResponseStatus.Failed.toString());
+		}
+
+		return response.toString();
+	}
+
+	@POST @Path("Delivery/Cancel") @Produces(MediaType.APPLICATION_JSON)
+	public String CancelOrderDelivery(String cancelOrderRequest) {
+		JSONObject response = new JSONObject();
+		System.out.println("request : " + cancelOrderRequest);
+		try {
+			JSONParser parser = new JSONParser();
+			JSONObject cancelRequestJSON = (JSONObject)parser.parse(cancelOrderRequest);
+
+
+			Driver requestingDriver = new Driver();
+			requestingDriver.setDriverId(Integer.parseInt(cancelRequestJSON.get("driverId").toString()));
+			requestingDriver.setDriverToken(cancelRequestJSON.get("driverToken").toString());
+
+			double driverLat = Double.valueOf(cancelRequestJSON.get("driverLat").toString());
+			double driverLng = Double.valueOf(cancelRequestJSON.get("driverLng").toString());
+
+
+			Order cancelledOrder = new Order();
+			cancelledOrder.setOrderNumber(Integer.parseInt(cancelRequestJSON.get("orderNumber").toString()));
+			cancelledOrder.setOrderReport(cancelRequestJSON.get("orderReport").toString());
+
+			String status = "";
+			ArrayList<Character> statusChars = new ArrayList<Character>();
+
+			CancelOrderProcessor cancelOrderProcess = new CancelOrderProcessor();
+			ArrayList<Order> ordersList = cancelOrderProcess.CancelOrderDelivery(requestingDriver, cancelledOrder, driverLat, driverLng, statusChars);
+
+			for(char charItr : statusChars) {
+				status += charItr;
+			}
+
+			if(ordersList == null) {
+				if(statusChars != null && ResponseStatus.Driver_Banned.toString().equals(status)) {
+
+					response.put("status", status);
+					response.put("driverToken", requestingDriver.getDriverToken().toString());
+					return response.toString();
+				}
+				ResponseStatus[] responses = ResponseStatus.class.getEnumConstants();
+				for(ResponseStatus responseItr : responses) {
+					if(requestingDriver.getDriverToken().toString().equals(responseItr.toString())) {
+						response.put("status", requestingDriver.getDriverToken().toString());
+						return response.toString();
+					}
+				}
+
+				response.put("status", ResponseStatus.Failed.toString());
+				response.put("driverToken", requestingDriver.getDriverToken().toString());
+				return response.toString();
+
+			}
+
+			System.out.println("Before filling the response end of Cancel Web Service: response =" + response);
+			
+			response.put("status", ResponseStatus.Success.toString());
+			response.put("driverToken", requestingDriver.getDriverToken().toString());
+
+			JSONArray listOfOrders = new JSONArray();
+			for(Order orderItr : ordersList) {
+				JSONObject orderItrJSON = new JSONObject();
+				orderItrJSON.put("orderId", orderItr.getOrderId());
+				orderItrJSON.put("orderNumber", orderItr.getOrderNumber());
+				orderItrJSON.put("orderState", orderItr.getOrderState());
+				orderItrJSON.put("orderDropOffAddress", orderItr.getOrderDropOffAddress());
+				orderItrJSON.put("orderDeliveryDate", orderItr.getOrderDeliveryDate().toString());
+				orderItrJSON.put("orderLocationLink", orderItr.getOrderLocationLink());
+				orderItrJSON.put("orderRank", orderItr.getOrderRank());
+
+				orderItrJSON.put("customerName", orderItr.getCustomer().getCustomerName());
+				orderItrJSON.put("customerPhoneNo", orderItr.getCustomer().getCustomerPhoneNo());
+
+				listOfOrders.add(orderItrJSON);			
+			}
+
+			response.put("listOfOrders", listOfOrders);
+
+			System.out.println("After filling the response end of Cancel Web Service: response =" + response);
+			return response.toString();
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			response.put("status", ResponseStatus.Failed.toString());
+		}
+
+		return response.toString();
+	}
+
+	@POST @Path("Fetch") @Produces(MediaType.APPLICATION_JSON)
+	public String GetDriverOrders(String getOrdersRequest) {
+		System.out.println("request in get droiver orders: " + getOrdersRequest);
+		JSONObject response = new JSONObject();
+		try {
+			JSONParser parser = new JSONParser();
+			JSONObject requestJSON = (JSONObject)parser.parse(getOrdersRequest);
+
+			System.out.println("RERERERERERERE REquested 222");
+			Driver requestingDriver = new Driver();
+			requestingDriver.setDriverId(Integer.parseInt(requestJSON.get("driverId").toString()));
+			requestingDriver.setDriverToken(requestJSON.get("driverToken").toString());
+			String orders_State = requestJSON.get("orders_State") == null ?
+					null 
+					: requestJSON.get("orders_State").toString();
+
+			System.out.println("driverTOKEN: " + requestingDriver.getDriverToken());
+			if(orders_State == null) {
+				response.put("status", ResponseStatus.Incorrect_Info);
+				return response.toString();
+			}
+			Double driverLat = null;
+			Double driverLng = null;
+			if(orders_State.equals("pending")) {
+				System.out.println("");
+				driverLat = Double.parseDouble(requestJSON.get("driverLat").toString());
+				driverLng = Double.parseDouble(requestJSON.get("driverLng").toString());
+			}
+
+
+			String status = "";
+			ArrayList<Character> statusChars = new ArrayList<Character>();
+
+			FetchOrdersProcessor fetchOrdersProcess = new FetchOrdersProcessor();
+			System.out.println("before getDriverOrders works!!! && Driver Coordinates are : " + driverLng + "   " + driverLat);
+
+
+			List<Order> driverOrders = fetchOrdersProcess.getDriverOrders(requestingDriver, orders_State, driverLat, driverLng, statusChars);
+			System.out.println("after getDriverOrders works!!! && Driver Coordinates are : " + driverLng + "   " + driverLat);
+			
+			System.out.println("after getDriverOrders works!!! && driver orders are : " + driverOrders);
+			for(char charItr : statusChars) {
+				status += charItr;
+				System.out.println("StatusItr: "+ charItr);
+			}
+
+			if(driverOrders == null) {
+				System.out.println("status: " + status);
+				if(statusChars != null && ResponseStatus.Driver_Banned.toString().equals(status)) {
+					response.put("status",status);
+					response.put("driverToken", requestingDriver.getDriverToken().toString());
+					System.out.println("RESPONSE 1: "+ response);
+					return response.toString();
+				}
+				ResponseStatus[] responses = ResponseStatus.class.getEnumConstants();
+				for(ResponseStatus responseItr : responses) {
+					if(requestingDriver.getDriverToken().toString().equals(responseItr.toString())) {
+
+						System.out.println(responseItr);
+						response.put("status", requestingDriver.getDriverToken().toString());
+						System.out.println("RESPONSE 2: "+ response);
+						return response.toString();
+					}
+				}
+
+				response.put("status", ResponseStatus.Failed.toString());
+				response.put("driverToken", requestingDriver.getDriverToken().toString());
+				System.out.println("RESPONSE 3: "+ response);
+				return response.toString();
+
+			}
+
+
+			response.put("status", ResponseStatus.Success.toString());
+			response.put("driverToken", requestingDriver.getDriverToken().toString());
+
+			JSONArray listOfOrders = new JSONArray();
+			System.out.println();
+			for(final Order orderIterator : driverOrders) {
+				JSONObject orderJSON= new JSONObject();
+
+				orderJSON.put("orderId", orderIterator.getOrderId());
+				orderJSON.put("orderNumber", orderIterator.getOrderNumber());
+				orderJSON.put("orderState", orderIterator.getOrderState());
+				orderJSON.put("orderRank", orderIterator.getOrderRank());
+
+				//
+				orderJSON.put("orderDeliveryDate", orderIterator.getOrderDeliveryDate().toString());
+				//
+
+				orderJSON.put("orderDropOffAddress", orderIterator.getOrderDropOffAddress());
+				orderJSON.put("orderLocationLink", orderIterator.getOrderLocationLink());	
+				orderJSON.put("customerName", orderIterator.getCustomer().getCustomerName());
+				orderJSON.put("customerPhoneNo", orderIterator.getCustomer().getCustomerPhoneNo());
+
+
+				listOfOrders.add(orderJSON);
+			}
+
+			//System.out.println(listOfOrders);
+
+			response.put("listOfOrders", listOfOrders);
+
+			System.out.println(response);
+			return response.toString();
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			response.put("status", ResponseStatus.Failed.toString());
+		}
+
+		return response.toString();
+	}
+}
+
+
+

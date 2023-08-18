@@ -1,0 +1,83 @@
+package com.deli.star.processor;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.deli.star.DTO.Admin;
+import com.deli.star.DTO.Company;
+import com.deli.star.DTO.Order;
+import com.deli.star.authentication.TokenAuthValidator;
+import com.deli.star.dao.DAO;
+import com.deli.star.response.codes.ResponseStatus;
+
+public class AdminOrderCancellationProcessor {
+	public Map<String, String> CancelOrder(Admin requestingAdmin, Order cancelledOrder) {
+		Map<String, String> result = new HashMap<String, String>();
+
+		try{
+			// Admin token Authentication.
+			TokenAuthValidator adminAuth = new TokenAuthValidator();
+			boolean authentic = adminAuth.ValidateAdminToken(requestingAdmin);
+			if(!authentic) {
+				result.put("status", ResponseStatus.Failed.toString());
+				return result;
+			}
+
+
+			DAO updateOrder = new DAO();
+			Company adminCompany = updateOrder.GetAdminCompany(requestingAdmin);
+			cancelledOrder.setCompanyId(adminCompany.getCompanyId());
+			Order foundOrder = updateOrder.GetOrder(cancelledOrder);
+
+			if(foundOrder.getOrderRank() != 0 && foundOrder.getOrderState().equals("pending")) {
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "This order is being delivered now!");
+
+				return result;
+			}
+			if(foundOrder.getOrderState().equals("confirmed"))
+				System.out.println("foundOrder delivery date: " + foundOrder.getOrderDeliveryDate());
+			if(foundOrder.getCompanyId() == 0) {
+				requestingAdmin.setAdminToken(ResponseStatus.Not_Authorized.toString());
+				result.put("status", ResponseStatus.Failed.toString());
+				return result;
+			}
+
+
+
+			if(foundOrder.getOrderDeliveryDate().compareTo(LocalDate.now()) < 0) {
+				System.out.println("foundOrder delivery date: " + foundOrder.getOrderDeliveryDate());
+				System.out.println("current date: " + LocalDate.now());
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The order delivery date is in the past. Order delivery date must be at least today ?".replace("?", LocalDate.now().toString()));
+				return result;
+			}
+
+
+			if(foundOrder.getOrderState().equals("cancelled")) {
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The order is already cancelled!");
+
+				return result;
+			}
+
+			foundOrder.setOrderState("cancelled");
+
+			boolean cancelled = updateOrder.UpdateOrder(foundOrder); 
+			if(!cancelled) {
+				result.put("status", ResponseStatus.Failed.toString());
+				return result;
+			}
+
+			result.put("status", ResponseStatus.Success.toString());
+			return result;
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+
+		result.put("status", ResponseStatus.Failed.toString());
+		return result;
+	}
+}

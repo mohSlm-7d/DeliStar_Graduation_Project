@@ -1,0 +1,62 @@
+package com.deli.star.processor;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.deli.star.DTO.Admin;
+import com.deli.star.DTO.Company;
+import com.deli.star.DTO.Order;
+import com.deli.star.authentication.TokenAuthValidator;
+import com.deli.star.dao.DAO;
+import com.deli.star.response.codes.ResponseStatus;
+
+public class ReschedulingOrderProcessor {
+	public Map<String, String> RescheduleOrder(Admin requestingAdmin, Order rescheduledOrder) {
+		Map<String, String> result = new HashMap<String, String>();
+		try{
+			
+			if(rescheduledOrder.getOrderDeliveryDate().compareTo(LocalDate.now()) >= 0) {
+				DAO updateOrder = new DAO();
+				System.out.println("rescheduledOrder.getOrderDeliveryDate().compareTo(LocalDate.now()) >= 0 ::: " +  rescheduledOrder.getOrderDeliveryDate().compareTo(LocalDate.now()));
+				rescheduledOrder.setCompanyId(requestingAdmin.getCompany().getCompanyId());
+				Order foundOrder = updateOrder.GetOrder(rescheduledOrder);
+				System.out.println("orderState of found Order (REscheduleOrder): state: " + rescheduledOrder.getOrderState());
+				if(foundOrder.getOrderRank() != 0 && foundOrder.getOrderState().equals("pending")) {
+					result.put("status", ResponseStatus.Failed.toString());
+					result.put("errorMssg", "This order is cuurently assigned to a driver!");
+					
+					return result;
+				}
+				
+				
+				if(foundOrder.getOrderState().equals("confirmed")) {
+					result.put("status", ResponseStatus.Failed.toString());
+					result.put("errorMssg", "A confirmed order cannot be rescheduled.");
+					return result;
+				}
+				
+				if(foundOrder.getOrderState().equals("cancelled")) {
+					System.out.println("this order is cancelled and has been rescheduled to a future date.");
+					rescheduledOrder.setOrderState("pending");
+				}
+				
+			}
+			
+			EditOrderProcessor editingOrderProcess = new EditOrderProcessor();
+			return editingOrderProcess.EditOrder(requestingAdmin, rescheduledOrder);
+			
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The order cannot be resheduled to an old date."
+						+ " The order must be rescheduled to the date of today ? at least.".replace("?", LocalDate.now().toString()));
+				return result;
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			result.put("status", ResponseStatus.Failed.toString());
+		}
+		return result;
+	}
+}

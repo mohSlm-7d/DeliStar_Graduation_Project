@@ -1,0 +1,13 @@
+127.0.0.1 - - [29/Jul/2023:12:55:23 +0300] "GET / HTTP/1.1" 404 751
+0:0:0:0:0:0:0:1 - - [29/Jul/2023:12:55:39 +0300] "POST /DeliStarBackend/Logout/Driver HTTP/1.1" 200 31
+127.0.0.1 - - [29/Jul/2023:13:02:22 +0300] "GET / HTTP/1.1" 404 751
+0:0:0:0:0:0:0:1 - - [29/Jul/2023:13:02:56 +0300] "POST /DeliStarBackend/Driver/Orders/Fetch HTTP/1.1" 200 75
+0:0:0:0:0:0:0:1 - - [29/Jul/2023:13:03:20 +0300] "POST /DeliStarBackend/Driver/Orders/Fetch HTTP/1.1" 200 75
+0:0:0:0:0:0:0:1 - - [29/Jul/2023:13:03:22 +0300] "POST /DeliStarBackend/Driver/Orders/Fetch HTTP/1.1" 200 75
+0:0:0:0:0:0:0:1 - - [29/Jul/2023:13:03:24 +0300] "POST /DeliStarBackend/Driver/Orders/Fetch HTTP/1.1" 200 75
+127.0.0.1 - - [29/Jul/2023:17:14:52 +0300] "GET / HTTP/1.1" 404 751
+127.0.0.1 - - [29/Jul/2023:17:30:42 +0300] "GET / HTTP/1.1" 404 751
+0:0:0:0:0:0:0:1 - - [29/Jul/2023:17:30:59 +0300] "POST /DeliStarBackend/Logout/Driver HTTP/1.1" 200 37
+0:0:0:0:0:0:0:1 - - [29/Jul/2023:17:34:03 +0300] "POST /DeliStarBackend/Logout/Driver HTTP/1.1" 200 37
+0:0:0:0:0:0:0:1 - - [29/Jul/2023:17:34:18 +0300] "POST /DeliStarBackend/Login/Driver HTTP/1.1" 200 446
+0:0:0:0:0:0:0:1 - - [29/Jul/2023:17:35:37 +0300] "POST /DeliStarBackend/Logout/Driver HTTP/1.1" 200 31

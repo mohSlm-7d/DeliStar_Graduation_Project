@@ -1,0 +1,20 @@
+package deli.star.processor;
+import java.time.LocalDateTime;
+import java.util.*;
+public class LogIn {
+	public static String AdminLogIn(String email, String password) {
+		
+		String TimeStampToken = LocalDateTime.now().toString();
+		try{/*
+		 * here the to query (Select from the mysql class driver that will be built in this app later).
+		 * 
+		 * 
+		 * */}catch(Exception error) {
+			 
+		 }
+		return "";
+	}
+	public static String DriverLogIn(String email, String password) {
+		return "";
+	}
+}
