@@ -1,0 +1,32 @@
+package com.deli.star.processor;
+
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.deli.star.DTO.Admin;
+import com.deli.star.DTO.Company;
+import com.deli.star.DTO.Order;
+import com.deli.star.authentication.TokenAuthValidator;
+import com.deli.star.dao.DAO;
+import com.deli.star.response.codes.ResponseStatus;
+
+public class ReschedulingOrderProcessor {
+	public Map<String, String> RescheduleOrder(Admin requestingAdmin, Order rescheduledOrder) {
+		Map<String, String> result = new HashMap<String, String>();
+		try{
+			
+			result.put("status", ResponseStatus.Failed.toString());
+			result.put("errorMssg", "The order cannot be resheduled to an old date."
+						+ " The order must be rescheduled to the date of today ? at least.".replace("?", LocalDate.now().toString()));
+			return result;
+			}
+			
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+			result.put("status", ResponseStatus.Failed.toString());
+		}
+		return result;
+	}
+}

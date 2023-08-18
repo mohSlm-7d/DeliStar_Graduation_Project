@@ -1,0 +1,43 @@
+package com.deli.star.processor;
+
+import com.deli.star.DTO.Admin;
+import com.deli.star.DTO.Company;
+import com.deli.star.DTO.Order;
+import com.deli.star.authentication.TokenAuthValidator;
+import com.deli.star.dao.DAO;
+import com.deli.star.response.codes.ResponseStatus;
+
+public class DeleteOrderProcessor {
+	public boolean DeleteOrder(Admin requestingAdmin, Order order) {
+
+		// Admin token authentication.
+		TokenAuthValidator adminAuth = new TokenAuthValidator();
+		boolean authentic = adminAuth.ValidateAdminToken(requestingAdmin);
+		if(!authentic) {
+			return false;
+		} 
+		
+		DAO fetchAndDelete = new DAO();
+		
+		// Authorization check (checking if the right resources
+		// (objects) are being accessed by the right actors(subjects).
+		// (checking the order with the admin if they belong to the same company).
+		Company adminCompany = fetchAndDelete.GetAdminCompany(requestingAdmin);
+		order.setCompanyId(adminCompany.getCompanyId());
+		Order foundOrder = fetchAndDelete.GetOrder(order);
+		if(foundOrder.getOrderId() == 0) {
+			requestingAdmin.setAdminToken(ResponseStatus.Not_Authorized.toString());
+			return false;
+		}
+		
+		order.setCompanyId(adminCompany.getCompanyId());
+		
+		boolean orderDeleted = fetchAndDelete.DeleteOrder(order);
+		if(!orderDeleted) {
+			return false;
+		}
+		
+		
+		return true;
+	}
+}
