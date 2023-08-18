@@ -1,7 +1,0 @@
-INDEX VERSION 1.4+C:\Users\DELL\Desktop\GP Edited Version\DeliStar\DeliStarBackendSystemProject\DeliStarBackendSystem\.metadata\.plugins\org.eclipse.wst.jsdt.core\indexes
-1011857286.index
-1036975983.index
-2351704257.index
-818805527.index
-4068403190.index
-2137877617.index
