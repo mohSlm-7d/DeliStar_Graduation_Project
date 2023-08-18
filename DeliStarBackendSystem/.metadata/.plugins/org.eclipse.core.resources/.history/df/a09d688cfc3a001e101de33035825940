@@ -1,0 +1,339 @@
+package com.deli.star.processor;
+
+import java.sql.Savepoint;
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.deli.star.DTO.Admin;
+import com.deli.star.DTO.Company;
+import com.deli.star.DTO.Driver;
+import com.deli.star.authentication.TokenAuthValidator;
+import com.deli.star.dao.DAO;
+import com.deli.star.response.codes.ResponseStatus;
+import com.deli.star.validation.ValidationUtility;
+
+public class AddAccountProcessor {
+	public Map<String, String> AddAdminAndCompany(Admin newAdmin) {
+		try {	
+			Map<String, String> result = new HashMap<String, String>();
+			
+			DAO add = new DAO();
+			Company newCompany = newAdmin.getCompany();
+			
+			System.out.println("Processing Company Info: ");
+			
+			
+			
+			// Validating the company information.
+			newCompany.setCompanyName(ValidationUtility.validateName(newCompany.getCompanyName()));
+			if(newCompany.getCompanyName() == null) {
+				add.CloseConnection();
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The company name is invalid. Company name must only contain characters and spaces.");
+				return result;
+			}
+			
+			newCompany.setCompanyEmail(ValidationUtility.validateEmail(newCompany.getCompanyEmail()));
+			if(newCompany.getCompanyEmail() == null) {
+				add.CloseConnection();
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The company email is invalid.");
+				return result;
+			}
+			
+			newCompany.setCompanyPhoneNo(ValidationUtility.validatePhoneNo(newCompany.getCompanyPhoneNo()));
+			if(newCompany.getCompanyPhoneNo() == null) {
+				add.CloseConnection();
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The company phone number is invalid. Company phone number must start with + and your country code "
+						+ "and must contain 7 digits minimum and 15 digits maximum.");
+				return result;
+			}
+			
+			
+			System.out.println("Addign new company in db: "+ LocalDate.now());
+			Company existingCompany = add.GetCompany(null, newCompany);
+			if(existingCompany.getCompanyId() == 0) {
+				boolean addedCompany = add.AddCompany(newCompany);
+				if(!addedCompany) {
+					add.DeleteCompany(newCompany);
+					add.CloseConnection();
+					System.out.println("Company Not Added!");
+					
+					result.put("status", ResponseStatus.Failed.toString());
+					result.put("errorMssg", "This company account already exists!");
+					return result;
+				}
+				newCompany = add.GetCompany(null, newCompany);
+				
+				
+				
+				newAdmin.setCompany(newCompany);
+				System.out.println("The COMPANY Is ADDED NoW: " + newAdmin.getCompany().getCompanyId());
+			}
+			else {
+				newAdmin.setCompany(existingCompany);
+				System.out.println("The COMPANY EXISTS: " + existingCompany.getCompanyId());
+			}
+			
+			
+			newAdmin.setAdminPassword(""+newAdmin.getAdminPassword().hashCode());
+			
+			System.out.println("Processing Admin Info: ");
+	
+	
+			// Validating the admin information.
+			newAdmin.setAdminName(ValidationUtility.validateName(newAdmin.getAdminName()));
+			if(newAdmin.getAdminName() == null) {
+				add.DeleteCompany(newCompany);
+				add.CloseConnection();
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The admin name is invalid. Admin name must only contain characters and spaces.");
+				return result;
+			}
+			
+			newAdmin.setAdminEmail(ValidationUtility.validateEmail(newAdmin.getAdminEmail()));
+			if(newAdmin.getAdminEmail() == null) {
+				add.DeleteCompany(newCompany);
+				add.CloseConnection();
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The admin email is invalid.");
+				return result;
+			}
+			
+			newAdmin.setAdminPhoneNo(ValidationUtility.validatePhoneNo(newAdmin.getAdminPhoneNo()));
+			if(newAdmin.getAdminPhoneNo() == null) {
+				add.DeleteCompany(newCompany);
+				add.CloseConnection();
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The admin phone number is invalid. Admin phone number must start with + and your country code "
+						+ "and must at contain 7 digits minimum and 15 digits maximum.");
+				return result;
+			}
+			
+			newAdmin.setAdminGender(ValidationUtility.validateGender(newAdmin.getAdminGender()));
+			if(newAdmin.getAdminGender() == null) {
+				add.DeleteCompany(newCompany);
+				add.CloseConnection();
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The Admin gedner is invalid. Gender must be either Male or Female.");
+				return result;
+			}
+			
+			
+			
+			
+			System.out.println("Addign new admin in db: "+LocalDate.now());
+			boolean addedAdmin = add.AddAdmin(newAdmin);		
+			if(!addedAdmin) {
+				add.CloseConnection();
+				System.out.println("Admin Not Added!");
+				
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "This admin account already exists!");
+				return result;
+			}
+			
+			
+			
+			System.out.println("Sending Company Email: " + LocalDate.now());
+			// Sending a welcoming email to the new registered company.		
+			String EmailSubject = "Welcome to DeliStar Delivery Management System";
+			String EmailBody = "Greetings " + newCompany.getCompanyName() + ","
+					+ "\n"
+					+ "We are delighted to welcome you to DeliStar Delivery Management! As a newly registered company on our platform, we extend our warmest congratulations on taking this step towards optimizing your delivery operations."
+					+ "\n"
+					+ "With DeliStar, you have gained access to a sophisticated delivery management system that will empower your company to provide efficient, reliable, and seamless delivery services to your customers. Our cutting-edge features, from order tracking to route optimization, are designed to enhance your delivery process and elevate customer satisfaction."
+					+ "\n"
+					+ "Your account is now active, and you can begin leveraging the full potential of DeliStar's tools. We understand the importance of a smooth onboarding process, and our support team is readily available to provide any guidance or assistance you may need."
+					+ "\n"
+					+ "Thank you for choosing DeliStar as your delivery management solution. We are excited to be a part of your company's journey and look forward to collaborating closely to achieve your delivery goals."
+					+ "\n"
+					+ "Should you have any questions or require further information, feel free to reach out to our support team at help.delistar@gmail.com."
+					+ "\n"
+					+ "Best regards,\n"
+					+ "DeliStar Team";
+			String ToAddress = newCompany.getCompanyEmail();
+			
+			
+			MailUtility gmailMsgSend = new MailUtility();
+			//boolean sentCompanyEmail = true;
+			boolean sentCompanyEmail = gmailMsgSend.sendEmail(EmailSubject, EmailBody, ToAddress);
+			
+			System.out.println("Sent Company Email: " + LocalDate.now());
+			
+			if(!sentCompanyEmail) {
+				result.put("status", ResponseStatus.Failed.toString());
+				add.DeleteCompany(newCompany);
+				add.CloseConnection();
+				return result;
+			}
+	
+			
+			
+			System.out.println("Sending Admin Email: " + LocalDate.now());
+			// Sending a welcoming email to the new registered admin of the new company.
+			EmailSubject = "Welcome to DeliStar Delivery Management System - New Administrator Account";
+			EmailBody = "Dear " + newAdmin.getAdminName() + ","
+			+ "\n"
+			+ "We are pleased to inform you that your company's DeliStar Delivery Management account has been successfully set up, and you have been granted administrator privileges. This email serves as a confirmation of your role as an administrator for your company's delivery management using DeliStar."
+			+ "\n"
+			+ "With your new administrator account, you gain access to a suite of powerful tools that will help streamline and optimize your company's delivery operations. You can efficiently manage deliveries, track orders in real-time, and ensure a smooth and reliable delivery process."
+			+ "\n"
+			+ "If you have any questions or need assistance during the setup process, our support team is ready to provide prompt assistance. We are dedicated to ensuring a seamless transition and a positive experience for you and your company."
+			+ "\n"
+			+ "Thank you for choosing DeliStar as your delivery management solution. We look forward to partnering with your company and contributing to its success in delivering exceptional service."
+			+ "\n"
+			+ "Best regards,\n"
+			+ "DeliStar Team";
+			
+			
+			ToAddress = newAdmin.getAdminEmail();
+			//boolean sentAdminEmail = true;
+			boolean sentAdminEmail = gmailMsgSend.sendEmail(EmailSubject, EmailBody, ToAddress);
+			if(!sentAdminEmail) {
+				result.put("status", ResponseStatus.Failed.toString());
+				add.DeleteCompany(newCompany);
+				add.DeleteAdmin(newAdmin);
+				add.CloseConnection();
+				return result;
+			}
+			System.out.println("Sent Admin Email: " + LocalDate.now());
+			
+			
+			add.CloseConnection();
+			
+			result.put("status", ResponseStatus.Success.toString());
+			return result;
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		
+		return null;
+	}
+	
+	
+	public Map<String, String> AddDriver(Admin requestingAdmin, Driver newDriver) {
+		try {
+			Map<String, String> result = new HashMap<String, String>();
+			
+			//Admin authentication by token.
+			TokenAuthValidator adminAuth = new TokenAuthValidator();
+			boolean authentic = adminAuth.ValidateAdminToken(requestingAdmin);
+			if(!authentic) {
+				result.put("status", ResponseStatus.Not_Authentic.toString());
+				return result;
+			}
+			
+			
+			DAO add = new DAO();
+			
+			
+			Company adminCompany = add.GetAdminCompany(requestingAdmin);
+			
+			newDriver.setCompany(adminCompany);
+			//String driverAccPassword = newDriver.getDriverPassword();
+			
+	
+			// Validating the driver information.
+			newDriver.setDriverName(ValidationUtility.validateName(newDriver.getDriverName()));
+			if(newDriver.getDriverName() == null) {
+				add.CloseConnection();
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The driver name is invalid. Driver name must only contain characters and spaces.");
+				return result;
+			}
+			
+			newDriver.setDriverEmail(ValidationUtility.validateEmail(newDriver.getDriverEmail()));
+			if(newDriver.getDriverEmail() == null) {
+				add.CloseConnection();
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The driver email is invalid.");
+				return result;
+			}
+			
+			newDriver.setDriverPhoneNo(ValidationUtility.validatePhoneNo(newDriver.getDriverPhoneNo()));
+			if(newDriver.getDriverPhoneNo() == null) {
+				add.CloseConnection();
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The driver phone number is invalid. Driver phone number must start with + and your country code "
+						+ "and must at contain 7 digits minimum and 15 digits maximum.");
+				return result;
+			}
+			
+			newDriver.setDriverGender(ValidationUtility.validateGender(newDriver.getDriverGender()));
+			if(newDriver.getDriverGender() == null) {
+				add.CloseConnection();
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "The Driver gedner is invalid. Gender must be either Male or Female.");
+				return result;
+			}
+			
+			boolean validPassword = ValidationUtility.validatePassword(newDriver.getDriverPassword());
+			if(!validPassword) {
+				
+			}
+			boolean addedDriver = add.AddDriver(newDriver);
+			
+			if(!addedDriver) {
+				add.DeleteDriver(newDriver);
+				add.CloseConnection();
+				System.out.println("Driver Not Added!");
+				
+				result.put("status", ResponseStatus.Failed.toString());
+				result.put("errorMssg", "This driver account already exists!");
+				return result;
+			}
+			
+			
+			
+			// Sending a welcoming email to the new added driver by the company admin.
+			String EmailBody =  "Dear " + newDriver.getDriverName() + ","
+					+ "\n"
+					+ "Congratulations on joining DeliStar Driver App! Your company's administrator has added you as a driver, and we are delighted to have you on board as a vital part of our dedicated delivery team."
+					+ "\n"
+					+ "Your driver account has been successfully set up, and we are providing you with your login credentials:"
+					+ "\n"
+					+ "Email Address: " + newDriver.getDriverEmail()
+					+"\n"
+					+ "Password: " + newDriver.getDriverPassword()
+					+ "\n"
+					+ "With DeliStar Driver App, you gain access to a user-friendly platform that will simplify your delivery process and ensure timely and efficient deliveries. Stay connected with real-time updates, view your delivery assignments, and access optimized routes, all at your fingertips."
+					+ "\n"
+					+ "Our team is committed to supporting you every step of the way. Should you have any questions or need assistance, please don't hesitate to reach out to our support team at help.delistar@gmail.com."
+					+ "\n"
+					+ "Thank you for being a part of DeliStar Driver App. We look forward to working together and making a significant impact on delivering exceptional service to our valued clients."
+					+ "\n"
+					+ "Best regards,\n"
+					+ "DeliStar Team";
+			;
+			String EmailSubject= "Welcome to DeliStar Driver App - Account Activation";
+			String ToAddress = newDriver.getDriverEmail();
+			
+			MailUtility gmailMsgSend = new MailUtility();
+			boolean sentDriverEmail = gmailMsgSend.sendEmail(EmailSubject, EmailBody, ToAddress);
+			
+			
+			if(!sentDriverEmail) {
+				add.DeleteDriver(newDriver);
+				add.CloseConnection();
+				
+				result.put("status", ResponseStatus.Failed.toString());
+				return result;
+			}
+			
+			
+			add.CloseConnection();
+			
+			result.put("status", ResponseStatus.Success.toString());
+			return result;
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		
+		return null;
+	}
+}

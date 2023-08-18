@@ -1,0 +1,84 @@
+package com.deli.star.processor;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import com.deli.star.DTO.Admin;
+import com.deli.star.DTO.Company;
+import com.deli.star.DTO.Driver;
+import com.deli.star.DTO.Order;
+import com.deli.star.authentication.TokenAuthValidator;
+import com.deli.star.dao.DAO;
+import com.deli.star.response.codes.ResponseStatus;
+
+public class DeleteDriverProcessor {
+	public Map<String, String> DeleteDriver(Admin requestingAdmin, Driver driverToDelete) {
+		
+		Map<String, String> result = new HashMap<String, String>();
+		try {
+			// Admin authentiction by token.
+			TokenAuthValidator adminAuth = new TokenAuthValidator();
+			boolean authentic = adminAuth.ValidateAdminToken(requestingAdmin);
+			if(!authentic) {
+				result.put("status", ResponseStatus.Failed.toString());
+				return result;
+			}
+			
+			DAO fetchAndDelete = new DAO();
+			
+			// Authorization check.
+			Company adminCompany = fetchAndDelete.GetAdminCompany(requestingAdmin);
+			Company checkDriverCompany = fetchAndDelete.GetDriverCompany(driverToDelete);
+			if(checkDriverCompany.getCompanyId() != adminCompany.getCompanyId()) {
+				requestingAdmin.setAdminToken(ResponseStatus.Not_Authorized.toString());
+				
+				result.put("status", ResponseStatus.Failed.toString());
+				return result;
+			}
+	
+			
+			// Checking if there are any assigned orders to this driver before deleting them.
+			ArrayList<Order> driverAssignedOrders = fetchAndDelete.GetDriverAllOrders(driverToDelete);
+			System.out.println("ArrayList of existing orders: " + driverAssignedOrders);
+			if(driverAssignedOrders != null) {
+				System.out.println("ArrayList of existing orders size: " + driverAssignedOrders.size());
+			}
+			if(driverAssignedOrders != null && driverAssignedOrders.size() > 0) {
+				System.out.println("This driver to be deleted is assigned to deliver existing orders!!!");
+				result.put("status", ResponseStatus.Failed.toString());
+				String errorMssg = "The driver you want to delete is already assigned to deliver existing orders. Try re-assigning the following orders which are \n Assigned order numnbers:[ " ;
+				
+				int i = 0;
+				while(i< driverAssignedOrders.size() - 1) {
+					errorMssg += driverAssignedOrders.get(i).getOrderNumber() + ", ";
+					i++;
+				}
+				
+				errorMssg += driverAssignedOrders.get(i).getOrderNumber() + "]";
+				
+				result.put("errorMssg", errorMssg);
+				return result;
+			}
+			
+			// Check if there are notifications for this driver to delete them before deleting the driver.
+			boolean deletedNotifications = fetchAndDelete.DeleteNotifications(driverToDelete);
+			
+			// Deleting the driver.
+			boolean deleted = fetchAndDelete.DeleteDriver(driverToDelete);
+			if(!deleted) {
+				result.put("status", ResponseStatus.Failed.toString());
+				return result;
+			}
+			
+			result.put("status", ResponseStatus.Success.toString());
+			return result;
+		}catch(Exception e) {
+			e.printStackTrace();
+			System.out.println(e.getMessage());
+		}
+		
+		result.put("status", ResponseStatus.Failed.toString());
+		return result;
+	}
+}

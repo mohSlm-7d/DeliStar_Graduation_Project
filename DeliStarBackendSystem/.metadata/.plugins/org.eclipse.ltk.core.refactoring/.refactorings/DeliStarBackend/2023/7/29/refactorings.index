@@ -1,0 +1,37 @@
+1689482442607	Rename method 'getCompany_id'
+1689482458028	Rename method 'setCompany_id'
+1689557014796	Rename package 'com.deli.star'
+1689557173300	Rename package 'com.deli.star.dao.authentication'
+1689557190843	Rename package 'com.deli.star.dao.DTO'
+1689557222452	Rename package 'com.deli.star.dao.processor'
+1689557300729	Rename package 'com.deli.star.dao.service'
+1689558079530	Delete element
+1689558719838	Rename package 'com.deli.star.dao'
+1689559549648	Rename package 'com.deli.star'
+1689560008921	Rename package 'com.deli.star.dao'
+1689560090207	Move compilation unit
+1689560122871	Move compilation unit
+1689560393125	Delete element
+1689560761669	Rename package 'com.deli.star'
+1689561557040	Rename type 'Driver'
+1689561649163	Rename type 'DeliDriver'
+1689623098596	Rename type 'AdminLogIn'
+1689623110515	Rename type 'DriverLogIn'
+1689682609768	Rename type 'RetrieveOrders'
+1689682633563	Rename type 'ReturnCompanyOrdersService'
+1689689053248	Delete element
+1689689495707	Rename compilation unit 'AddOrder.java'
+1689691794448	Rename type 'AddOrder'
+1689718960108	Rename field 'companyId'
+1689720098900	Rename field 'companyId'
+1689727930622	Delete elements
+1689756636032	Rename type 'TokenAuthenticationValidator'
+1689757047724	Rename method 'getDriverFullInfo'
+1689757093474	Rename method 'getAdminFullInfo'
+1689781709073	Rename field 'driver'
+1689817767202	Delete element
+1689861570551	Rename type 'CancelOrder'
+1689915224070	Rename type 'GetDriverNotifications'
+1689986283028	Rename type 'AdminSignUp'
+1689991639353	Rename type 'AddAdminProcessor'
+1689999489155	Rename compilation unit 'DriverManagementService.java'

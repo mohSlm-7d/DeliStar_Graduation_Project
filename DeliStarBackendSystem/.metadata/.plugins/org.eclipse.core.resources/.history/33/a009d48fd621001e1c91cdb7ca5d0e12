@@ -1,0 +1,24 @@
+package deli.star.processor;
+import java.time.LocalDateTime;
+import java.util.*;
+public class LogIn {
+	public static String AdminLogIn(String email, String password) {
+		
+		String timeStampToken = LocalDateTime.now().toString();
+		String id = "";
+		// get the id of the adimn and add it to the token;
+		String token = timeStampToken + id;
+		
+		try{/*
+		 * here to check if such record exists in db.(by mysql class driver).
+		 * 
+		 * 
+		 * */}catch(Exception error) {
+			 
+		 }
+		return TimeStampToken;
+	}
+	public static String DriverLogIn(String email, String password) {
+		return "";
+	}
+}
