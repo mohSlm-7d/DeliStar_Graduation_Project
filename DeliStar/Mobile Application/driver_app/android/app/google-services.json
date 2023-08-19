@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "200934091301",
+    "firebase_url": "https://delistar-app-default-rtdb.firebaseio.com",
+    "project_id": "delistar-app",
+    "storage_bucket": "delistar-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:200934091301:android:8d79b645476b62b0842dcc",
+        "android_client_info": {
+          "package_name": "com.example.driver_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "200934091301-cv0lu96oql3dk8v59q5s004b7f5qukdr.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.driver_app",
+            "certificate_hash": "c8497cc85740440be8826189012dc9c5025ee4f2"
+          }
+        },
+        {
+          "client_id": "200934091301-l13cdr4qds5agrkpcr0cuq0a4a2l598c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfOAdyDyKNaqbihqkzPvcmYdxEFuSZYPs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "200934091301-l13cdr4qds5agrkpcr0cuq0a4a2l598c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
