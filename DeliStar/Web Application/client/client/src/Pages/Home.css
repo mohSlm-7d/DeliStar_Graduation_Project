@@ -1,0 +1,58 @@
+.card-container {
+  display: flex;
+	width: 672px;
+  justify-content: space-between;
+  margin: 80px auto 0px auto;
+}
+
+.card {
+  width: 208px;
+  height: 289px;
+  background-color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+	align-content: space-between;
+  border-radius: 5px;
+  box-shadow: 0px 1px 5px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+
+}
+.card:hover, .driver-card:hover{
+  background-color: #eeeeee;
+
+}
+
+.card-text-normal {
+  font-size: 27px;
+  color: #000;
+}
+
+.card-text-highlight {
+  font-size: 40px;
+  color: #EFC600;
+}
+
+.card-icon {
+  width: 50px;
+}
+
+.driver-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  width: 604px;
+  height: 69px;
+  border: 1px solid black;
+	background: white;
+  cursor: pointer;
+}
+.drivers-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  width: 654px;
+	padding-bottom: 40px;
+  margin: 40px auto 0px auto;
+}

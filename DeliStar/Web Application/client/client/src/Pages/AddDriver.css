@@ -1,0 +1,60 @@
+.add-driver-container {
+	margin-top: 80px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.input-bar {
+  width: 654px;
+  height: 57px;
+  border: 1.5px solid #000;
+  background-color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+	padding-right: 10px;
+  box-sizing: border-box;
+}
+
+.input-bar input,
+.input-bar select {
+  flex-grow: 1;
+  margin-left: 10px;
+	border: none;
+	font-size: 20px;
+}
+
+.default-option {
+  color: #767676;
+}
+
+.selected-option {
+  color: black;
+}
+
+
+.input-bar input:focus,
+.input-bar select:focus {
+	outline: 0px;
+}
+
+.confirm-button {
+  width: 202px;
+  height: 52px;
+  background-color: #000;
+  color: #fff;
+  margin-top: 40px;
+  cursor: pointer;
+  border: none;
+	border-radius: 10px;
+  font-size: 22px;
+}
+
+.ShowPassword{
+	background: none;
+	border: none;
+	font-size: 16px;
+}

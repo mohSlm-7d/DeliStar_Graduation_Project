@@ -1,0 +1,105 @@
+body{
+  margin: 0px;
+  padding: 0px;
+  font-family: 'DIN Alternate', sans-serif;
+  background: #F6F5F5;
+
+}
+  
+*{
+  font-family: 'DIN Alternate', sans-serif;
+}
+
+
+/* Header styling */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: black;
+  height: 94px;
+  position:fixed;
+  width: calc(100vw - 100px);
+  top: 0px;
+  z-index: 3;
+  padding: 0px 50px;
+}
+
+.header-logo {
+  height: 48px;
+}
+.Logout{
+ cursor: pointer;
+ font-size: 20px;
+}
+.Logout:hover{
+  color: #FFD300;
+  text-decoration: underline;
+}
+
+.header-title {
+  color: white;
+  font-size: 23px;
+  margin-right: 15px;
+  display: flex;
+  align-items: center;
+}
+
+.RegisterButton{
+  width: 202px;
+  height: 50px;
+  border-radius: 18px;
+  font-size: 22px;
+  background: #fff;
+}
+.RegisterButton:hover{
+  background: #FFD300;
+}
+
+/* Nav bar styling */
+.nav-bar {
+  position: fixed;
+  top: 94px; /* Height of the header */
+  right: 0;
+  background-color: #C5C3C3;
+  width: 385px;
+  height: calc(100% - 94px); /* Full height minus the header */
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+  padding-top: 80px;
+
+}
+
+.nav-item {
+  list-style-type: none;
+  background-color: black;
+  border-radius: 10px 53px 10px 53px;
+  color: white;
+  font-size: 23px;
+  width: 295px;
+  height: 44px;
+  text-align: center;
+  margin-bottom: 25px;
+  cursor: pointer;
+  display: block;
+  text-decoration: none;
+  line-height: 44px;
+}
+
+/* Current page link styling */
+.current {
+  background-color: #FFD300;
+  color: black;
+}
+.nav-item .current{
+  color: black;
+}
+
+
+.ContentContainer{
+  display: block;
+  padding-top: 94px;
+  padding-right: 385px;
+}

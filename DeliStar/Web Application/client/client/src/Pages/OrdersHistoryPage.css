@@ -1,0 +1,118 @@
+.OrdersHistoryContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+	margin-top: 46px;
+}
+
+.tools-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  /* width: 654px; */
+  height: 30px;
+  gap: 10px;
+}
+
+.tools-bar p {
+  margin-right: 10px;
+	font-size: 18px;
+}
+
+.FlexHori{
+	display: flex;
+	align-items: center;
+  
+}
+
+.download-button {
+  border: none;
+  background: none;
+  color: #000;
+  text-decoration: underline;
+  cursor: pointer;
+	font-size: 16px;
+}
+
+.search-results {
+  width: 654px;
+  text-align: center;
+	color: #7A7A7A;
+	font-size: 18px;
+}
+
+.orders-list {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 654px;
+	padding-bottom: 40px;
+}
+
+.order-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 24px;
+  width: 604px;
+  height: 69px;
+  border: 1px solid black;
+	background: white;
+}
+.order-card:hover{
+  background: #e9e9e9;
+}
+.OrderCardLeftSide{
+	display: flex;
+	align-items: center;
+}
+.status {
+  width: 90px;
+  height: 29px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 10px;
+  color: white;
+	margin-right: 44px;
+}
+
+.status.pending {
+  background: black;
+}
+
+.status.confirmed {
+  background: #05894A;
+}
+
+.status.cancelled {
+  background: #EC1212;
+}
+
+.order-owner {
+  font-size: 20px;
+  color: black;
+}
+
+.order-number {
+  font-size: 20px;
+  color: #7A7A7A;
+}
+
+.DatePicker {
+  width: 70px;
+}
+.tools-bar>.FlexHori{
+  width: 600px;
+  justify-content: space-between;
+  margin-right: 60px;
+
+}
+.FlexHori>.FlexHori>p{
+  margin-right: 0px;
+  margin-left: 10px;
+}
+.reset-button{
+  margin-left: 10px;
+}

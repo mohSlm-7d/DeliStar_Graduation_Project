@@ -1,0 +1,61 @@
+.OrderInfoContainer{
+	display: flex;
+	flex-direction: column;
+	gap: 25px;
+	align-items: center;
+	margin-top: 40px;
+}
+.OrderDetails{
+	padding: 30px 46px;
+	width: 485px;
+	border: solid black 1px;
+	border-radius: 23px;
+	display: flex;
+	flex-direction: column;
+	font-size: 20px;
+	background: #ffff;
+	gap: 40px;
+}
+.OrderDetails>p{
+	margin: 0px;
+}
+.OrderDetails>label>input{
+	font-size: 18px;
+	margin-left: 7px;
+}
+
+.OrderInfoButton{
+	height: 35px;
+	width: 180px;
+	border-radius: 30px;
+	color: white;
+	font-size: 18px;
+	line-height: 33px;
+	cursor: pointer;
+	text-align: center;
+}
+.OrderInfoButton:hover{
+	text-decoration: underline;
+}
+
+.CancelButton{
+	background: rgb(197, 0, 0);
+}
+.RescheduleButton{
+	background: rgb(0, 130, 108);
+}
+.EditButton{
+	background: white;
+	color: black;
+	border: solid black 1px;
+}
+.SubmitButton{
+	background: #FFD300;
+	color: black;
+}
+
+.CancelledOrderInfo{
+	display: flex;
+	align-items: center;
+	gap: 20px;
+}
