@@ -1,1 +1,1 @@
-# DeliStar_Graduation_Project
+A delivery management system that acts as a third party system that organizes the orders delivery process and helps the companies to manage their drivers and helps the drivers with the orders delivery process. The system dynamically assigns an order for the driver to deliver at the moment among their already assigned orders to them by their company admin.
